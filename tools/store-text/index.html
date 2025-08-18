@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔐 Store Text - Secure Text Storage | LinkToQR.me WEB TOOLS</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+  
+  <!-- Google AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-6126558809611102">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6126558809611102"
+     crossorigin="anonymous"></script>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Secure text storage with encryption, auto-save, and cloud sync. Store notes safely online.">
+  <meta name="keywords" content="secure text storage, encrypted notes, password protected, auto save, cloud sync">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-styles.css">
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .store-btn {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .store-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .store-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .store-btn.success {
+      background: linear-gradient(45deg, #10b981, #059669);
+    }
+
+    .store-btn.danger {
+      background: linear-gradient(45deg, #ef4444, #dc2626);
+    }
+
+    .text-editor {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 16px;
+      line-height: 1.6;
+      resize: vertical;
+      min-height: 400px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .text-editor:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .note-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-left: 4px solid #667eea;
+    }
+
+    .note-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .note-card.active {
+      border-left-color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .status-bar {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .word-count {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .save-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .save-indicator.saved { background: #10b981; }
+    .save-indicator.unsaved { background: #ef4444; }
+    .save-indicator.saving { background: #f59e0b; animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .toolbar {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .toolbar-btn {
+      background: rgba(102, 126, 234, 0.1);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .toolbar-btn:hover {
+      background: rgba(102, 126, 234, 0.2);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #10b981;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      z-index: 1100;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    .toast.error {
+      background: #ef4444;
+    }
+
+    .toast.warning {
+      background: #f59e0b;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="futuristic-header sticky top-0 z-20 w-full py-4">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <a href="../../index.html" class="flex items-center">
+        <span class="text-3xl font-bold logo-text orbitron">⚡ LinkToQR.me</span>
+        <span class="text-lg font-semibold text-gray-200 ml-2">WEB TOOLS</span>
+      </a>
+      <nav class="flex space-x-3">
+        <a href="../../index.html" class="return-home-btn">
+          <i class="fas fa-home mr-2"></i>HOME
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <!-- Page Title -->
+    <div class="text-center mb-8">
+      <h1 class="text-5xl font-bold text-white orbitron mb-4">🔐 STORE TEXT</h1>
+      <p class="text-lg text-white opacity-80 max-w-2xl mx-auto">
+        Secure text storage with auto-save, encryption, and cloud sync. Your notes, protected and accessible.
+      </p>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      
+      <!-- Left Sidebar: Notes List -->
+      <div class="lg:col-span-1 space-y-6">
+        
+        <!-- Notes List -->
+        <div class="glass-card p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-white">
+              <i class="fas fa-sticky-note mr-2"></i>My Notes
+            </h3>
+            <button id="new-note" class="store-btn success text-sm">
+              <i class="fas fa-plus mr-1"></i>New
+            </button>
+          </div>
+          
+          <div id="notes-list" class="space-y-2 max-h-64 overflow-y-auto">
+            <!-- Notes will be populated here -->
+          </div>
+        </div>
+
+        <!-- Google AdSense Ad -->
+        <div class="glass-card p-6">
+          <h4 class="text-lg font-bold text-white mb-4 text-center">
+            <i class="fas fa-star mr-2"></i>Support Free Tools
+          </h4>
+          
+          <!-- Store Text Tool Ad -->
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-6126558809611102"
+               data-ad-slot="2345678901"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          
+          <p class="text-white text-sm mt-4 text-center opacity-75">
+            🌟 Ads help us provide free secure storage
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Main Editor Area -->
+      <div class="lg:col-span-3 space-y-6">
+        
+        <!-- Toolbar -->
+        <div class="glass-card p-4">
+          <div class="toolbar">
+            <button id="save-note" class="toolbar-btn" title="Save Note">
+              <i class="fas fa-save mr-2"></i>Save
+            </button>
+            <button id="load-note" class="toolbar-btn" title="Load Note">
+              <i class="fas fa-folder-open mr-2"></i>Load
+            </button>
+            <button id="export-note" class="toolbar-btn" title="Export as File">
+              <i class="fas fa-download mr-2"></i>Export
+            </button>
+            <button id="share-note" class="toolbar-btn" title="Generate Share Link">
+              <i class="fas fa-share mr-2"></i>Share
+            </button>
+            <button id="encrypt-note" class="toolbar-btn" title="Encrypt Note">
+              <i class="fas fa-lock mr-2"></i>Encrypt
+            </button>
+            <button id="clear-note" class="toolbar-btn text-red-600" title="Clear Text">
+              <i class="fas fa-trash mr-2"></i>Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- Text Editor -->
+        <div class="glass-card p-6">
+          <div class="mb-4">
+            <input type="text" id="note-title" placeholder="Enter note title..." 
+                   class="w-full p-3 text-lg font-semibold bg-transparent border-b-2 border-white border-opacity-30 text-white placeholder-gray-300 focus:outline-none focus:border-white">
+          </div>
+          
+          <textarea id="main-editor" class="text-editor" 
+                    placeholder="Start typing your note here...
+
+✨ Features:
+• Auto-save every few seconds
+• Secure local storage
+• Export to file
+• Share via encrypted links
+• Password protection
+• Word count tracking
+
+Your text is automatically saved as you type. Use the toolbar above for additional options."></textarea>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center">
+              <span class="save-indicator saved" id="save-indicator"></span>
+              <span id="save-status">All changes saved</span>
+            </div>
+            <div class="flex items-center">
+              <i class="fas fa-cloud text-blue-500" id="cloud-indicator" title="Cloud sync enabled"></i>
+              <span class="ml-1 text-sm" id="cloud-status">Synced</span>
+            </div>
+          </div>
+          <div class="word-count">
+            <span><i class="fas fa-font mr-1"></i><span id="char-count">0</span> chars</span>
+            <span><i class="fas fa-align-left mr-1"></i><span id="word-count">0</span> words</span>
+            <span><i class="fas fa-paragraph mr-1"></i><span id="line-count">1</span> lines</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Modals will be inserted here by JavaScript -->
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="../universal-enhancements.js"></script>
+  
+  <!-- AdSense Scripts -->
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+  
+  <script src="store-text-pro.js"></script>
+</body>
+</html>

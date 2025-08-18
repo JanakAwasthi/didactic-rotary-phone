@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📱 QR Scanner - LinkToQR.me WEB TOOLS</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+  
+  <!-- Google AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-6126558809611102">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6126558809611102"
+     crossorigin="anonymous"></script>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Professional QR Code Scanner - Scan QR codes using camera, upload images, or paste URLs. Free online tool.">
+  <meta name="keywords" content="qr scanner, qr code reader, barcode scanner, scan qr code, camera scanner, image scanner">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-styles.css">
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .scanner-btn {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .scanner-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .scanner-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .camera-container {
+      position: relative;
+      background: #000;
+      border-radius: 15px;
+      overflow: hidden;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #camera-video {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: cover;
+    }
+
+    .scanner-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      pointer-events: none;
+    }
+
+    .scanner-overlay::before,
+    .scanner-overlay::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #00ff88;
+    }
+
+    .scanner-overlay::before {
+      top: -3px;
+      left: -3px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .scanner-overlay::after {
+      bottom: -3px;
+      right: -3px;
+      border-left: none;
+      border-top: none;
+    }
+
+    .upload-zone {
+      border: 3px dashed rgba(255, 255, 255, 0.4);
+      border-radius: 15px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white;
+    }
+
+    .upload-zone:hover {
+      border-color: #00ff88;
+      background: rgba(0, 255, 136, 0.1);
+    }
+
+    .upload-zone.dragover {
+      border-color: #00ff88;
+      background: rgba(0, 255, 136, 0.2);
+    }
+
+    .result-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+      border-left: 5px solid #00ff88;
+    }
+
+    .error-card {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      border-radius: 10px;
+      padding: 15px;
+      color: #fff;
+      margin-top: 10px;
+    }
+
+    .loading-spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid #00ff88;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .status-green { background: #00ff88; }
+    .status-red { background: #ff0040; }
+    .status-yellow { background: #ffaa00; }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="futuristic-header sticky top-0 z-20 w-full py-4">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <a href="../../index.html" class="flex items-center">
+        <span class="text-3xl font-bold logo-text orbitron">⚡ LinkToQR.me</span>
+        <span class="text-lg font-semibold text-gray-200 ml-2">WEB TOOLS</span>
+      </a>
+      <nav class="flex space-x-3">
+        <a href="../../index.html" class="return-home-btn">
+          <i class="fas fa-home mr-2"></i>HOME
+        </a>
+        <a href="../qr-generator/index.html" class="scanner-btn">
+          <i class="fas fa-qrcode mr-2"></i>GENERATOR
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <!-- Page Title -->
+    <div class="text-center mb-8">
+      <h1 class="text-5xl font-bold text-white orbitron mb-4">📱 QR SCANNER</h1>
+      <p class="text-lg text-white opacity-80 max-w-2xl mx-auto">
+        Scan QR codes using your camera, upload images, or enter image URLs. Fast, reliable, and secure.
+      </p>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Left Panel: Scanner Controls -->
+      <div class="space-y-6">
+        
+        <!-- Camera Scanner -->
+        <div class="glass-card p-6">
+          <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+            <i class="fas fa-camera mr-3"></i>Camera Scanner
+          </h3>
+          
+          <div class="camera-container mb-4" id="camera-container">
+            <video id="camera-video" autoplay muted playsinline style="display: none;"></video>
+            <div class="scanner-overlay" id="scanner-overlay" style="display: none;"></div>
+            <div id="camera-placeholder" class="text-center text-white">
+              <i class="fas fa-camera text-6xl mb-4 opacity-50"></i>
+              <p class="text-lg">Click "Start Camera" to begin scanning</p>
+            </div>
+          </div>
+
+          <div class="flex space-x-3 mb-4">
+            <button id="start-camera" class="scanner-btn flex-1">
+              <i class="fas fa-play mr-2"></i>Start Camera
+            </button>
+            <button id="stop-camera" class="scanner-btn flex-1" style="display: none;">
+              <i class="fas fa-stop mr-2"></i>Stop Camera
+            </button>
+          </div>
+
+          <div class="text-sm text-white opacity-75 flex items-center">
+            <span class="status-indicator status-red" id="camera-status-dot"></span>
+            <span id="camera-status">Camera not started</span>
+          </div>
+        </div>
+
+        <!-- Upload Image -->
+        <div class="glass-card p-6">
+          <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+            <i class="fas fa-upload mr-3"></i>Upload Image
+          </h3>
+          
+          <div class="upload-zone" id="upload-zone">
+            <i class="fas fa-cloud-upload-alt text-4xl mb-3 opacity-60"></i>
+            <p class="text-lg font-semibold mb-2">Drop QR code image here</p>
+            <p class="opacity-75 mb-4">or click to browse files</p>
+            <button class="scanner-btn">
+              <i class="fas fa-folder-open mr-2"></i>Choose File
+            </button>
+            <input type="file" id="file-input" accept="image/*" class="hidden">
+          </div>
+        </div>
+
+        <!-- URL Scanner -->
+        <div class="glass-card p-6">
+          <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+            <i class="fas fa-link mr-3"></i>Scan from URL
+          </h3>
+          
+          <div class="flex space-x-3">
+            <input type="url" id="image-url" placeholder="https://example.com/qr-code.png" 
+                   class="flex-1 p-3 rounded-lg bg-white bg-opacity-20 text-white placeholder-gray-300 border border-white border-opacity-30">
+            <button id="scan-url" class="scanner-btn">
+              <i class="fas fa-search mr-2"></i>Scan
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Panel: Results & Ads -->
+      <div class="space-y-6">
+        
+        <!-- Scan Results -->
+        <div class="glass-card p-6">
+          <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+            <i class="fas fa-search-plus mr-3"></i>Scan Results
+          </h3>
+          
+          <div id="scan-results" class="space-y-4">
+            <div class="text-center text-white opacity-75 py-8">
+              <i class="fas fa-qrcode text-6xl mb-4 opacity-50"></i>
+              <p class="text-lg">No QR code scanned yet</p>
+              <p class="text-sm opacity-75">Results will appear here</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Google AdSense Ad -->
+        <div class="glass-card p-6">
+          <h4 class="text-lg font-bold text-white mb-4 text-center">
+            <i class="fas fa-star mr-2"></i>Support Our Free Tools
+          </h4>
+          
+          <!-- QR Scanner Tool Ad -->
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-6126558809611102"
+               data-ad-slot="1234567890"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          
+          <p class="text-white text-sm mt-4 text-center opacity-75">
+            🌟 Ads help keep our tools free for everyone
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-content-center" style="display: none;">
+    <div class="glass-card p-6 text-center">
+      <div class="loading-spinner mx-auto mb-4"></div>
+      <p class="text-white font-semibold" id="loading-message">Processing...</p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script src="../universal-enhancements.js"></script>
+  
+  <!-- AdSense Scripts -->
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+  
+  <script src="qr-scanner-pro.js"></script>
+</body>
+</html>
