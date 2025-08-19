@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🔐 Store Text - Secure Text Storage | LinkToQR.me WEB TOOLS</title>
-  
+
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="../../favicon.ico">
-  
+
   <!-- Google AdSense -->
   <meta name="google-adsense-account" content="ca-pub-6126558809611102">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6126558809611102"
      crossorigin="anonymous"></script>
-  
+
   <!-- SEO Meta Tags -->
   <meta name="description" content="Secure text storage with encryption, auto-save, and cloud sync. Store notes safely online.">
   <meta name="keywords" content="secure text storage, encrypted notes, password protected, auto save, cloud sync">
-  
+
   <!-- Styles -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../shared-styles.css">
-  
+
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -79,6 +79,7 @@
       min-height: 400px;
       width: 100%;
       transition: all 0.3s ease;
+      color: #111827;
     }
 
     .text-editor:focus {
@@ -95,6 +96,7 @@
       cursor: pointer;
       transition: all 0.3s ease;
       border-left: 4px solid #667eea;
+      color: #111827;
     }
 
     .note-card:hover {
@@ -211,6 +213,11 @@
     .toast.warning {
       background: #f59e0b;
     }
+
+    /* small helper */
+    .muted { color: #6b7280; font-size: 13px; }
+    .btn-primary { background: linear-gradient(45deg,#667eea,#764ba2); color: #fff; padding:8px 12px; border-radius:8px; border:none; cursor:pointer;}
+    .btn-ghost { background:transparent; color:#374151; padding:8px 12px; border-radius:8px; border:1px solid #e5e7eb; cursor:pointer;}
   </style>
 </head>
 
@@ -241,10 +248,10 @@
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-      
+
       <!-- Left Sidebar: Notes List -->
       <div class="lg:col-span-1 space-y-6">
-        
+
         <!-- Notes List -->
         <div class="glass-card p-6">
           <div class="flex justify-between items-center mb-4">
@@ -255,7 +262,7 @@
               <i class="fas fa-plus mr-1"></i>New
             </button>
           </div>
-          
+
           <div id="notes-list" class="space-y-2 max-h-64 overflow-y-auto">
             <!-- Notes will be populated here -->
           </div>
@@ -266,7 +273,7 @@
           <h4 class="text-lg font-bold text-white mb-4 text-center">
             <i class="fas fa-star mr-2"></i>Support Free Tools
           </h4>
-          
+
           <!-- Store Text Tool Ad -->
           <ins class="adsbygoogle"
                style="display:block"
@@ -274,7 +281,7 @@
                data-ad-slot="2345678901"
                data-ad-format="auto"
                data-full-width-responsive="true"></ins>
-          
+
           <p class="text-white text-sm mt-4 text-center opacity-75">
             🌟 Ads help us provide free secure storage
           </p>
@@ -284,7 +291,7 @@
 
       <!-- Main Editor Area -->
       <div class="lg:col-span-3 space-y-6">
-        
+
         <!-- Toolbar -->
         <div class="glass-card p-4">
           <div class="toolbar">
@@ -303,6 +310,15 @@
             <button id="encrypt-note" class="toolbar-btn" title="Encrypt Note">
               <i class="fas fa-lock mr-2"></i>Encrypt
             </button>
+            <button id="decrypt-note" class="toolbar-btn" title="Decrypt Note">
+              <i class="fas fa-unlock mr-2"></i>Decrypt
+            </button>
+            <button id="export-encrypted" class="toolbar-btn" title="Export Encrypted">
+              <i class="fas fa-file-export mr-2"></i>Export Encrypted
+            </button>
+            <button id="import-encrypted" class="toolbar-btn" title="Import Encrypted">
+              <i class="fas fa-file-import mr-2"></i>Import Encrypted
+            </button>
             <button id="clear-note" class="toolbar-btn text-red-600" title="Clear Text">
               <i class="fas fa-trash mr-2"></i>Clear
             </button>
@@ -312,11 +328,11 @@
         <!-- Text Editor -->
         <div class="glass-card p-6">
           <div class="mb-4">
-            <input type="text" id="note-title" placeholder="Enter note title..." 
+            <input type="text" id="note-title" placeholder="Enter note title..."
                    class="w-full p-3 text-lg font-semibold bg-transparent border-b-2 border-white border-opacity-30 text-white placeholder-gray-300 focus:outline-none focus:border-white">
           </div>
-          
-          <textarea id="main-editor" class="text-editor" 
+
+          <textarea id="main-editor" class="text-editor"
                     placeholder="Start typing your note here...
 
 ✨ Features:
@@ -356,16 +372,17 @@ Your text is automatically saved as you type. Use the toolbar above for addition
   </main>
 
   <!-- Modals will be inserted here by JavaScript -->
+  <div id="modal-root"></div>
 
   <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script src="../universal-enhancements.js"></script>
-  
+
   <!-- AdSense Scripts -->
   <script>
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
-  
+
   <script src="store-text-pro.js"></script>
 </body>
 </html>
